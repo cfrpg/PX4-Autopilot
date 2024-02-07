@@ -100,5 +100,7 @@ matrix::Vector4f MecanumDriveKinematics::computeInverseKinematics(float linear_v
 	// Initialize Vector4f with the scaled results
 	Vector4f output(result(0, 0), result(1, 0), result(2, 0), result(3, 0));
 
+	printf("output: %f, %f, %f, %f\n", (double)output(0), (double)output(1), (double)output(2), (double)output(3));
+
 	return output;
 }

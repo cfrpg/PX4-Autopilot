@@ -49,6 +49,7 @@
 class GZMixingInterfaceWheel : public OutputModuleInterface
 {
 public:
+	// static constexpr int MAX_ACTUATORS = MixingOutput::MAX_ACTUATORS;
 	static constexpr int MAX_ACTUATORS = MixingOutput::MAX_ACTUATORS;
 
 	GZMixingInterfaceWheel(gz::transport::Node &node, pthread_mutex_t &node_mutex) :

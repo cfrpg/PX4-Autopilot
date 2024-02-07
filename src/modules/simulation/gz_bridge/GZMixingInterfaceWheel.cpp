@@ -63,6 +63,8 @@ bool GZMixingInterfaceWheel::updateOutputs(bool stop_wheels, uint16_t outputs[MA
 {
 	unsigned active_output_count = 0;
 
+	// printf("num_outputs: %d\n", num_outputs);
+
 	for (unsigned i = 0; i < num_outputs; i++) {
 		if (_mixing_output.isFunctionSet(i)) {
 			active_output_count++;
@@ -71,6 +73,8 @@ bool GZMixingInterfaceWheel::updateOutputs(bool stop_wheels, uint16_t outputs[MA
 			break;
 		}
 	}
+
+	// printf("active_output_count: %d\n", active_output_count);
 
 	if (active_output_count > 0) {
 		gz::msgs::Actuators wheel_velocity_message;
