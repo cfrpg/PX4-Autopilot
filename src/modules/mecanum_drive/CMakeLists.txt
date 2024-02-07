@@ -32,7 +32,7 @@
 ############################################################################
 
 add_subdirectory(MecanumDriveControl)
-add_subdirectory(MecanumDriveGuidance)
+# add_subdirectory(MecanumDriveGuidance)
 add_subdirectory(MecanumDriveKinematics)
 
 px4_add_module(
@@ -43,7 +43,7 @@ px4_add_module(
 		MecanumDrive.hpp
 	DEPENDS
 		MecanumDriveControl
-		MecanumDriveGuidance
+		# MecanumDriveGuidance
 		MecanumDriveKinematics
 		px4_work_queue
 		modules__control_allocator # for parameter CA_R_REV

@@ -88,8 +88,8 @@ void MecanumDriveGuidance::computeGuidance(float yaw, float angular_velocity, fl
 		break;
 
 	case GuidanceState::DRIVING: {
-			const float max_velocity = math::trajectory::computeMaxSpeedFromDistance(_param_rdd_max_jerk.get(),
-						   _param_rdd_max_accel.get(), distance_to_next_wp, 0.0f);
+			const float max_velocity = math::trajectory::computeMaxSpeedFromDistance(_param_md_max_jerk.get(),
+						   _param_md_max_accel.get(), distance_to_next_wp, 0.0f);
 			_forwards_velocity_smoothing.updateDurations(max_velocity);
 			_forwards_velocity_smoothing.updateTraj(dt);
 			desired_speed = math::interpolate<float>(abs(heading_error), 0.1f, 0.8f,
@@ -126,13 +126,13 @@ void MecanumDriveGuidance::updateParams()
 	ModuleParams::updateParams();
 
 	pid_set_parameters(&_heading_p_controller,
-			   _param_rdd_p_gain_heading.get(),  // Proportional gain
+			   _param_md_p_gain_heading.get(),  // Proportional gain
 			   0,  // Integral gain
 			   0,  // Derivative gain
 			   0,  // Integral limit
 			   200);  // Output limit
 
-	_forwards_velocity_smoothing.setMaxJerk(_param_rdd_max_jerk.get());
-	_forwards_velocity_smoothing.setMaxAccel(_param_rdd_max_accel.get());
+	_forwards_velocity_smoothing.setMaxJerk(_param_md_max_jerk.get());
+	_forwards_velocity_smoothing.setMaxAccel(_param_md_max_accel.get());
 	_forwards_velocity_smoothing.setMaxVel(_max_speed);
 }

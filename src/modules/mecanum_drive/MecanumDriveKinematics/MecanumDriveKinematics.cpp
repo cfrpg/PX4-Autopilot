@@ -51,8 +51,9 @@ void MecanumDriveKinematics::allocate()
 
 	const bool setpoint_timeout = (_mecanum_drive_control_output.timestamp + 100_ms) < now;
 
-	Vector2f wheel_speeds =
-		computeInverseKinematics(_mecanum_drive_control_output.speed, _mecanum_drive_control_output.yaw_rate);
+	Vector4f wheel_speeds =
+		computeInverseKinematics(_mecanum_drive_control_output.speed[0], _mecanum_drive_control_output.speed[1],
+					 _mecanum_drive_control_output.yaw_rate);
 
 	if (!_armed || setpoint_timeout) {
 		wheel_speeds = {}; // stop
@@ -61,31 +62,43 @@ void MecanumDriveKinematics::allocate()
 	wheel_speeds = matrix::constrain(wheel_speeds, -1.f, 1.f);
 
 	actuator_motors_s actuator_motors{};
-	actuator_motors.reversible_flags = _param_r_rev.get(); // should be 3 see rc.rover_mecanum_defaults
+	// actuator_motors.reversible_flags = _param_r_rev.get(); // should be 3 see rc.rover_mecanum_defaults
 	wheel_speeds.copyTo(actuator_motors.control);
 	actuator_motors.timestamp = now;
 	_actuator_motors_pub.publish(actuator_motors);
 }
 
-matrix::Vector4f MecanumDriveKinematics::computeInverseKinematics(float linear_velocity_x, float yaw_rate) const
+matrix::Vector4f MecanumDriveKinematics::computeInverseKinematics(float linear_velocity_x, float linear_velocity_y,
+		float yaw_rate) const
 {
-	if (_max_speed < FLT_EPSILON) {
-		return Vector4f();
-	}
+	// if (_max_speed < FLT_EPSILON) {
+	// 	return Vector4f();
+	// }
 
 	linear_velocity_x = math::constrain(linear_velocity_x, -_vx_max, _vx_max);
 	linear_velocity_y = math::constrain(linear_velocity_y, -_vy_max, _vy_max);
 	yaw_rate = math::constrain(yaw_rate, -_max_angular_velocity, _max_angular_velocity);
 
-	Vector4f output();
+	// Define input vector and matrix data
+	float input_data[3] = {linear_velocity_x, linear_velocity_y, yaw_rate};
+	Matrix<float, 3, 1> input(input_data);
 
-	Matrix m<float, 2, 2>{1, 2, 3, 4};
+	float m_data[12] = {1, -1, -(_lx + _ly), 1, 1, (_lx + _ly), 1, 1, -(_lx + _ly), 1, -1, (_lx + _ly)};
+	Matrix<float, 4, 3> m(m_data);
 
+	// Perform matrix-vector multiplication
+	auto result = m * input; // result is Matrix<float, 4, 1>
 
+	// Precompute scale factor
+	const float scale = 1 / _r;
 
+	// Scale the result by 1/_r
+	for (size_t i = 0; i < 4; ++i) {
+		result(i, 0) *= scale; // Efficiently use precomputed scale factor
+	}
 
+	// Initialize Vector4f with the scaled results
+	Vector4f output(result(0, 0), result(1, 0), result(2, 0), result(3, 0));
 
-	// Calculate the left and right wheel speeds
-	return Vector4f(linear_velocity_x - rotational_velocity,
-			linear_velocity_x + rotational_velocity) / _max_speed;
+	return output;
 }

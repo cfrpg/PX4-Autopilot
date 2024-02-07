@@ -106,8 +106,10 @@ void MecanumDriveControl::control(float dt)
 	mecanum_drive_setpoint_s mecanum_drive_control_output = _mecanum_drive_setpoint;
 
 	if (_mecanum_drive_setpoint.closed_loop_speed_control) {
-		mecanum_drive_control_output.speed +=
-			pid_calculate(&_pid_speed, _mecanum_drive_setpoint.speed, _vehicle_forward_speed, 0, dt);
+		mecanum_drive_control_output.speed[0] +=
+			pid_calculate(&_pid_speed, _mecanum_drive_setpoint.speed[0], _vehicle_forward_speed, 0, dt);
+		mecanum_drive_control_output.speed[1] +=
+			pid_calculate(&_pid_speed, _mecanum_drive_setpoint.speed[1], _vehicle_forward_speed, 0, dt);
 	}
 
 	if (_mecanum_drive_setpoint.closed_loop_yaw_rate_control) {
@@ -117,7 +119,8 @@ void MecanumDriveControl::control(float dt)
 
 
 	if (!_spooled_up) {
-		mecanum_drive_control_output.speed = 0.0f;
+		mecanum_drive_control_output.speed[0] = 0.0f;
+		mecanum_drive_control_output.speed[1] = 0.0f;
 		mecanum_drive_control_output.yaw_rate = 0.0f;
 	}
 

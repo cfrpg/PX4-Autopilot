@@ -132,9 +132,9 @@ private:
 	PID_t _heading_p_controller; ///< The PID controller for yaw rate.
 
 	DEFINE_PARAMETERS(
-		(ParamFloat<px4::params::RDD_P_HEADING>) _param_rdd_p_gain_heading,
+		(ParamFloat<px4::params::MD_P_HEADING>) _param_md_p_gain_heading,
 		(ParamFloat<px4::params::NAV_ACC_RAD>) _param_nav_acc_rad,
-		(ParamFloat<px4::params::RDD_MAX_JERK>) _param_rdd_max_jerk,
-		(ParamFloat<px4::params::RDD_MAX_ACCEL>) _param_rdd_max_accel
+		(ParamFloat<px4::params::MD_MAX_JERK>) _param_md_max_jerk,
+		(ParamFloat<px4::params::MD_MAX_ACCEL>) _param_md_max_accel
 	)
 };

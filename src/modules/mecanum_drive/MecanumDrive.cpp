@@ -50,14 +50,15 @@ void MecanumDrive::updateParams()
 {
 	ModuleParams::updateParams();
 
-	_mecanum_drive_kinematics.setWheelBase(_param_rdd_wheel_base.get());
+	_mecanum_drive_kinematics.setWheelBase(_param_md_wheel_base.get(), _param_md_wheel_base.get());
+	_mecanum_drive_kinematics.setWheelRadius(_param_md_wheel_radius.get());
 
-	_max_speed = _param_rdd_wheel_speed.get() * _param_rdd_wheel_radius.get();
-	_mecanum_drive_guidance.setMaxSpeed(_max_speed);
-	_mecanum_drive_kinematics.setMaxSpeed(_max_speed);
+	_max_speed = _param_md_wheel_speed.get() * _param_md_wheel_radius.get();
+	// _mecanum_drive_guidance.setMaxSpeed(_max_speed);
+	_mecanum_drive_kinematics.setMaxSpeed(_max_speed, _max_speed);
 
-	_max_angular_velocity = _max_speed / (_param_rdd_wheel_base.get() / 2.f);
-	_mecanum_drive_guidance.setMaxAngularVelocity(_max_angular_velocity);
+	_max_angular_velocity = _max_speed / (_param_md_wheel_base.get() / 2.f);
+	// _mecanum_drive_guidance.setMaxAngularVelocity(_max_angular_velocity);
 	_mecanum_drive_kinematics.setMaxAngularVelocity(_max_angular_velocity);
 }
 
@@ -104,8 +105,9 @@ void MecanumDrive::Run()
 
 			if (_manual_control_setpoint_sub.copy(&manual_control_setpoint)) {
 				mecanum_drive_setpoint_s setpoint{};
-				setpoint.speed = manual_control_setpoint.throttle * math::max(0.f, _param_rdd_speed_scale.get()) * _max_speed;
-				setpoint.yaw_rate = manual_control_setpoint.roll * _param_rdd_ang_velocity_scale.get() * _max_angular_velocity;
+				setpoint.speed[0] = manual_control_setpoint.throttle * math::max(0.f, _param_md_speed_scale.get()) * _max_speed;
+				setpoint.speed[1] = manual_control_setpoint.yaw * math::max(0.f, _param_md_speed_scale.get()) * _max_speed;
+				setpoint.yaw_rate = manual_control_setpoint.roll * _param_md_ang_velocity_scale.get() * _max_angular_velocity;
 
 				// if acro mode, we activate the yaw rate control
 				if (_acro_driving) {
@@ -122,15 +124,17 @@ void MecanumDrive::Run()
 			}
 		}
 
-	} else if (_mission_driving) {
-		// Mission mode
-		// directly receive setpoints from the guidance library
-		_mecanum_drive_guidance.computeGuidance(
-			_mecanum_drive_control.getVehicleYaw(),
-			_mecanum_drive_control.getVehicleBodyYawRate(),
-			dt
-		);
 	}
+
+	// else if (_mission_driving) {
+	// 	Mission mode
+	// 	directly receive setpoints from the guidance library
+	// 	_mecanum_drive_guidance.computeGuidance(
+	// 		_mecanum_drive_control.getVehicleYaw(),
+	// 		_mecanum_drive_control.getVehicleBodyYawRate(),
+	// 		dt
+	// 	);
+	// }
 
 	_mecanum_drive_control.control(dt);
 	_mecanum_drive_kinematics.allocate();

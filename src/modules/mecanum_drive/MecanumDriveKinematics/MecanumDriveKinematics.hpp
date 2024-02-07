@@ -73,6 +73,8 @@ public:
 	 */
 	void setMaxAngularVelocity(const float max_angular_velocity) { _max_angular_velocity = max_angular_velocity; };
 
+	void setWheelRadius(const float wheel_radius) {_r = wheel_radius;};
+
 	void setArmed(const bool armed) { _armed = armed; };
 
 	void allocate();
@@ -97,6 +99,7 @@ private:
 	float _ly{0.f};
 	float _vx_max{0.f};
 	float _vy_max{0.f};
+	float _r{1.f};
 	float _max_angular_velocity{0.f};
 
 	DEFINE_PARAMETERS(
