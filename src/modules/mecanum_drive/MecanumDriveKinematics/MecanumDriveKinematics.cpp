@@ -55,6 +55,9 @@ void MecanumDriveKinematics::allocate()
 		computeInverseKinematics(_mecanum_drive_control_output.speed[0], _mecanum_drive_control_output.speed[1],
 					 _mecanum_drive_control_output.yaw_rate);
 
+	printf("wheel_speeds: %f, %f, %f, %f\n", (double)wheel_speeds(0), (double)wheel_speeds(1), (double)wheel_speeds(2),
+	       (double)wheel_speeds(3));
+
 	if (!_armed || setpoint_timeout) {
 		wheel_speeds = {}; // stop
 	}
@@ -99,6 +102,8 @@ matrix::Vector4f MecanumDriveKinematics::computeInverseKinematics(float linear_v
 
 	// Initialize Vector4f with the scaled results
 	Vector4f output(result(0, 0), result(1, 0), result(2, 0), result(3, 0));
+
+	output = {0.1f, 0.1f, -0.1f, 0.1f};
 
 	printf("output: %f, %f, %f, %f\n", (double)output(0), (double)output(1), (double)output(2), (double)output(3));
 
