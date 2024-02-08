@@ -76,6 +76,8 @@ bool GZMixingInterfaceWheel::updateOutputs(bool stop_wheels, uint16_t outputs[MA
 
 	// printf("active_output_count: %d\n", active_output_count);
 
+	active_output_count = 4;
+
 	if (active_output_count > 0) {
 		gz::msgs::Actuators wheel_velocity_message;
 		wheel_velocity_message.mutable_velocity()->Resize(active_output_count, 0);

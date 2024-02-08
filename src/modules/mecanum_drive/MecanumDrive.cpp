@@ -109,7 +109,7 @@ void MecanumDrive::Run()
 				// setpoint.speed[1] = manual_control_setpoint.yaw * math::max(0.f, _param_md_speed_scale.get()) * _max_speed;
 				// setpoint.yaw_rate = manual_control_setpoint.roll * _param_md_ang_velocity_scale.get() * _max_angular_velocity;
 				setpoint.speed[0] = 0;
-				setpoint.speed[1] = 0.5;
+				setpoint.speed[1] = 0.0;
 				setpoint.yaw_rate = 0;
 
 				// if acro mode, we activate the yaw rate control
