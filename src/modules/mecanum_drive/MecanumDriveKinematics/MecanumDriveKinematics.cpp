@@ -64,6 +64,10 @@ void MecanumDriveKinematics::allocate()
 
 	wheel_speeds = matrix::constrain(wheel_speeds, -1.f, 1.f);
 
+	printf("wheel_speeds after all checks: %f, %f, %f, %f\n", (double)wheel_speeds(0), (double)wheel_speeds(1),
+	       (double)wheel_speeds(2),
+	       (double)wheel_speeds(3));
+
 	actuator_motors_s actuator_motors{};
 	// actuator_motors.reversible_flags = _param_r_rev.get(); // should be 3 see rc.rover_mecanum_defaults
 	wheel_speeds.copyTo(actuator_motors.control);
@@ -103,7 +107,7 @@ matrix::Vector4f MecanumDriveKinematics::computeInverseKinematics(float linear_v
 	// Initialize Vector4f with the scaled results
 	Vector4f output(result(0, 0), result(1, 0), result(2, 0), result(3, 0));
 
-	output = {0.1f, 0.1f, -0.1f, 0.1f};
+	output = {0.1f, 0.5f, -0.5f, -0.1f};
 
 	printf("output: %f, %f, %f, %f\n", (double)output(0), (double)output(1), (double)output(2), (double)output(3));
 
