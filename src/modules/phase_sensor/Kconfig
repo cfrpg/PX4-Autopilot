@@ -1,0 +1,12 @@
+menuconfig MODULES_PHASE_SENSOR
+	bool "phase_sensor"
+	default n
+	---help---
+		Enable support for phase_sensor
+
+menuconfig USER_PHASE_SENSOR
+	bool "phase_sensor running as userspace module"
+	default n
+	depends on BOARD_PROTECTED && MODULES_PHASE_SENSOR
+	---help---
+		Put phase_sensor in userspace memory

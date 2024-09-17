@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (C) 2012 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2019-2020 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,20 +32,84 @@
  ****************************************************************************/
 
 /**
- * @file mathlib.h
+ * @file FilterQueue.hpp
  *
- * Common header for mathlib exports.
+ * @brief Data queue for high order filter.
+ *
+ * @author cfrpg <cfrpg@hotmail.com>
  */
 
 #pragma once
 
-#ifdef __cplusplus
+#include <float.h>
 
-#include "math/Limits.hpp"
-#include "math/Functions.hpp"
-#include "math/SearchMin.hpp"
-#include "math/TrajMath.hpp"
-#include "math/Utilities.hpp"
-#include "math/MathHelper.hpp"
+using namespace math;
 
-#endif
+template <typename T=float>
+class FilterQueue
+{
+public:
+	FilterQueue()
+	{
+		Clear();
+	}
+
+
+	~FilterQueue() = default;
+
+	void Clear(void)
+	{
+		count = 0;
+		head = 0;
+		tail = 0;
+		for(int i=0;i<16;i++)
+			val[i]=0;
+	}
+
+	void Enqueue(T v)
+	{
+		if (((tail + 1) & 0x0F) == head)
+		{
+			return;
+		}
+
+		val[tail] = v;
+		tail = (tail + 1) & 0x0F;
+		count++;
+	}
+
+	T Dequeue(void)
+	{
+		if (tail == head)
+		{
+			return 0;
+		}
+
+		float r = val[head];
+		head = (head + 1) & 0x0F;
+		count--;
+		return r;
+	}
+
+	const T operator[](int32_t i) const
+	{
+		if (i >= count)
+		{
+			return 0;
+		}
+
+		return val[(head + i) & 0x0F];
+	}
+
+	int16_t Count()
+	{
+		return count;
+	}
+
+private:
+	T val[16];
+
+	int16_t count;
+	int16_t head;
+	int16_t tail;
+};

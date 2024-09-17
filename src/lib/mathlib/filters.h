@@ -32,20 +32,20 @@
  ****************************************************************************/
 
 /**
- * @file mathlib.h
+ * @file filters.h
  *
- * Common header for mathlib exports.
+ * Common header for filter exports.
  */
 
 #pragma once
 
 #ifdef __cplusplus
 
-#include "math/Limits.hpp"
-#include "math/Functions.hpp"
-#include "math/SearchMin.hpp"
-#include "math/TrajMath.hpp"
-#include "math/Utilities.hpp"
-#include "math/MathHelper.hpp"
+#include "math/filter/AlphaFilter.hpp"
+#include "math/filter/LowPassFilter2p.hpp"
+#include "math/filter/MedianFilter.hpp"
+#include "math/filter/NotchFilter.hpp"
+#include "math/filter/ButterLPF.hpp"
+#include "math/filter/FilterBase.hpp"
 
 #endif

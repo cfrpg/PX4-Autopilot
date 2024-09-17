@@ -34,7 +34,7 @@
         "editor.minimap.renderCharacters": false,
         "editor.minimap.showSlider": "always",
         "editor.suggest.localityBonus": true,
-        "editor.tabSize": 8,
+        "editor.tabSize": 4,
         "editor.wordWrapColumn": 120,
         "explorer.openEditors.visible": 0,
         "files.insertFinalNewline": true,
@@ -127,5 +127,6 @@
         "terminal.integrated.scrollback": 15000,
         "yaml.schemas": {
                 "${workspaceFolder}/validation/module_schema.yaml": "${workspaceFolder}/src/modules/*/module.yaml"
-        }
+        },
+        "editor.fontSize": 16
 }

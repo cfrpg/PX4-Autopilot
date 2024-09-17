@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (C) 2012 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2019-2020 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,20 +32,37 @@
  ****************************************************************************/
 
 /**
- * @file mathlib.h
+ * @file FilterBase.hpp
  *
- * Common header for mathlib exports.
+ * @brief Filter base.
+ *
+ * @author cfrpg <cfrpg@hotmail.com>
  */
 
 #pragma once
 
-#ifdef __cplusplus
+#include <float.h>
+#include <mathlib/math/Functions.hpp>
 
-#include "math/Limits.hpp"
-#include "math/Functions.hpp"
-#include "math/SearchMin.hpp"
-#include "math/TrajMath.hpp"
-#include "math/Utilities.hpp"
-#include "math/MathHelper.hpp"
+using namespace math;
 
-#endif
+template <typename T=float>
+class FilterBase
+{
+public:
+	FilterBase() = default;
+	~FilterBase() = default;
+
+	virtual T Process(T val)
+	{
+		return val;
+	}
+
+	virtual T GetValue()
+	{
+		return T();
+	}
+
+protected:
+
+};

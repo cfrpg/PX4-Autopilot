@@ -1,0 +1,135 @@
+__max_num_config_instances: &max_num_config_instances 1
+
+module_name: phase_sensor
+
+parameters:
+    - group: Flapping Control
+      definitions:
+        PS_SIN_CHANNEL:
+            description:
+                short: Phase sensor sin ADC channel
+                long: |
+                    This parameter specifies the ADC channel used to monitor sin channel of phase sensor.
+                    A value of -1 means to use the board default.
+
+            category: Developer
+            type: int32
+            reboot_required: true
+            min: -1
+            max: 18
+            default: 4
+
+        PS_COS_CHANNEL:
+            description:
+                short: Phase sensor cos ADC channel
+                long: |
+                    This parameter specifies the ADC channel used to monitor cos channel of phase sensor.
+                    A value of -1 means to use the board default.
+
+            category: Developer
+            type: int32
+            reboot_required: true
+            min: -1
+            max: 18
+            default: 10
+
+        PS_SIN_SCL:
+            description:
+                short: Phase sensor sin channel scaling factor
+                long: |
+                    Phase sensor sin channel scaling factor.
+
+            category: Developer
+            type: float
+            decimal: 8
+            reboot_required: false
+            min: 0
+            max: 100
+            default: 1
+
+        PS_SIN_OFF:
+            description:
+                short: Phase sensor sin channel offset
+                long: |
+                    Phase sensor sin channel offset.
+
+            category: Developer
+            type: float
+            decimal: 8
+            reboot_required: false
+            min: -10
+            max: 10
+            default: 0
+
+        PS_COS_SCL:
+            description:
+                short: Phase sensor cos channel scaling factor
+                long: |
+                    Phase sensor cos channel scaling factor.
+
+            category: Developer
+            type: float
+            decimal: 8
+            reboot_required: false
+            min: 0
+            max: 100
+            default: 1
+
+        PS_COS_OFF:
+            description:
+                short: Phase sensor cos channel offset
+                long: |
+                    Phase sensor cos channel offset.
+
+            category: Developer
+            type: float
+            decimal: 8
+            reboot_required: false
+            min: -10
+            max: 10
+            default: 0
+
+        PS_UP_ANG:
+            description:
+                short: Flapping angle sensor raw readings at the wing's upper limit.
+                long: |
+                    The raw flapping angle reading when wing reaches its upper limit position.
+
+            category: Developer
+            type: float
+            decimal: 8
+            reboot_required: false
+            min: -10
+            max: 10
+            default: 0
+
+        PS_DOWN_ANG:
+            description:
+                short: Flapping angle sensor raw readings at the wing's lower limit.
+                long: |
+                    The raw flapping angle reading when wing reaches its lower limit position.
+
+            category: Developer
+            type: float
+            decimal: 8
+            reboot_required: false
+            min: -10
+            max: 10
+            default: 0
+
+        PS_ANG_OFF:
+            description:
+                short: Offset between sensor readings and flapping phase angle
+                long: |
+                    The offset between the angle sensor readings and the actual flapping phase angle.
+
+            category: Developer
+            type: float
+            decimal: 8
+            reboot_required: false
+            min: -10
+            max: 10
+            default: 0
+
+
+
