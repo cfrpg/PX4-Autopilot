@@ -55,6 +55,7 @@
 
 using namespace time_literals;
 
+
 class PhaseSensor : public ModuleBase<PhaseSensor>, public ModuleParams, public px4::ScheduledWorkItem
 {
 public:
@@ -73,6 +74,10 @@ public:
 	bool init();
 
 	int print_status() override;
+
+	const static int8_t UnknowStroke = -1;
+	const static int8_t UpStroke = 0;
+	const static int8_t DownStroke = 1;
 
 private:
 	void Run() override;

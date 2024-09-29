@@ -15,4 +15,6 @@ float32 angular_speed
 int32 sin_adc_raw
 int32 cos_adc_raw
 
+int8 direction
+
 

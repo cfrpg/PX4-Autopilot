@@ -49,24 +49,30 @@ ADC::ADC(uint32_t base_address, uint32_t channels, bool publish_adc_report) :
 	channels |= px4_arch_adc_temp_sensor_mask();
 
 	/* allocate the sample array */
-	for (unsigned i = 0; i < ADC_TOTAL_CHANNELS; i++) {
-		if (channels & (1 << i)) {
+	for (unsigned i = 0; i < ADC_TOTAL_CHANNELS; i++)
+	{
+		if (channels & (1 << i))
+		{
 			_channel_count++;
 		}
 	}
 
-	if (_channel_count > PX4_MAX_ADC_CHANNELS) {
+	if (_channel_count > PX4_MAX_ADC_CHANNELS)
+	{
 		PX4_ERR("PX4_MAX_ADC_CHANNELS is too small (%zu, %u)", PX4_MAX_ADC_CHANNELS, _channel_count);
 	}
 
 	_samples = new px4_adc_msg_t[_channel_count];
 
 	/* prefill the channel numbers in the sample array */
-	if (_samples != nullptr) {
+	if (_samples != nullptr)
+	{
 		unsigned index = 0;
 
-		for (unsigned i = 0; i < ADC_TOTAL_CHANNELS; i++) {
-			if (channels & (1 << i)) {
+		for (unsigned i = 0; i < ADC_TOTAL_CHANNELS; i++)
+		{
+			if (channels & (1 << i))
+			{
 				_samples[index].am_channel = i;
 				_samples[index].am_data = 0;
 				index++;
@@ -79,7 +85,8 @@ ADC::~ADC()
 {
 	ScheduleClear();
 
-	if (_samples != nullptr) {
+	if (_samples != nullptr)
+	{
 		delete _samples;
 	}
 
@@ -92,7 +99,8 @@ int ADC::init()
 {
 	int ret_init = px4_arch_adc_init(_base_address);
 
-	if (ret_init < 0) {
+	if (ret_init < 0)
+	{
 		PX4_ERR("arch adc init failed");
 		return ret_init;
 	}
@@ -105,7 +113,8 @@ int ADC::init()
 
 void ADC::Run()
 {
-	if (_first_run) {
+	if (_first_run)
+	{
 		open_gpio_devices();
 		_first_run = false;
 	}
@@ -113,11 +122,13 @@ void ADC::Run()
 	hrt_abstime now = hrt_absolute_time();
 
 	/* scan the channel set and sample each */
-	for (unsigned i = 0; i < _channel_count; i++) {
+	for (unsigned i = 0; i < _channel_count; i++)
+	{
 		_samples[i].am_data = sample(_samples[i].am_channel);
 	}
 
-	if (_publish_adc_report) {
+	if (_publish_adc_report)
+	{
 		update_adc_report(now);
 	}
 
@@ -152,18 +163,21 @@ void ADC::update_adc_report(hrt_abstime now)
 
 	unsigned max_num = _channel_count;
 
-	if (max_num > (sizeof(adc.channel_id) / sizeof(adc.channel_id[0]))) {
+	if (max_num > (sizeof(adc.channel_id) / sizeof(adc.channel_id[0])))
+	{
 		max_num = (sizeof(adc.channel_id) / sizeof(adc.channel_id[0]));
 	}
 
 	unsigned i;
 
-	for (i = 0; i < max_num; i++) {
+	for (i = 0; i < max_num; i++)
+	{
 		adc.channel_id[i] = _samples[i].am_channel;
 		adc.raw_data[i] = _samples[i].am_data;
 	}
 
-	for (; i < PX4_MAX_ADC_CHANNELS; ++i) {	// set unused channel id to -1
+	for (; i < PX4_MAX_ADC_CHANNELS; ++i)  	// set unused channel id to -1
+	{
 		adc.channel_id[i] = -1;
 	}
 
@@ -177,13 +191,15 @@ uint8_t ADC::read_gpio_value(int fd)
 {
 #ifdef CONFIG_DEV_GPIO
 
-	if (fd == -1) {
+	if (fd == -1)
+	{
 		return 0xff;
 	}
 
 	bool value;
 
-	if (ioctl(fd, GPIOC_READ, (long)&value) != 0) {
+	if (ioctl(fd, GPIOC_READ, (long)&value) != 0)
+	{
 		return 0xff;
 	}
 
@@ -205,15 +221,19 @@ void ADC::update_system_power(hrt_abstime now)
 	cnt += ADC_SCALED_V3V3_SENSORS_COUNT;
 #  endif
 
-	for (unsigned i = 0; i < _channel_count; i++) {
+	for (unsigned i = 0; i < _channel_count; i++)
+	{
 #  if defined(ADC_SCALED_V5_SENSE)
 
-		if (_samples[i].am_channel == ADC_SCALED_V5_SENSE) {
+		if (_samples[i].am_channel == ADC_SCALED_V5_SENSE)
+		{
 			// it is 2:1 scaled
 			system_power.voltage5v_v = _samples[i].am_data * (ADC_V5_V_FULL_SCALE / px4_arch_adc_dn_fullcount());
 			cnt--;
 
-		} else
+		}
+
+		else
 #  endif
 #  if defined(ADC_SCALED_V3V3_SENSORS_SENSE)
 		{
@@ -221,8 +241,10 @@ void ADC::update_system_power(hrt_abstime now)
 			static_assert(sizeof(system_power.sensors3v3) / sizeof(system_power.sensors3v3[0]) >= ADC_SCALED_V3V3_SENSORS_COUNT,
 				      "array too small");
 
-			for (int j = 0; j < ADC_SCALED_V3V3_SENSORS_COUNT; ++j) {
-				if (_samples[i].am_channel == sensors_channels[j]) {
+			for (int j = 0; j < ADC_SCALED_V3V3_SENSORS_COUNT; ++j)
+			{
+				if (_samples[i].am_channel == sensors_channels[j])
+				{
 					// it is 2:1 scaled
 					system_power.sensors3v3[j] = _samples[i].am_data * (ADC_3V3_SCALE * (3.3f / px4_arch_adc_dn_fullcount()));
 					system_power.sensors3v3_valid |= 1 << j;
@@ -233,7 +255,8 @@ void ADC::update_system_power(hrt_abstime now)
 
 #  endif
 
-		if (cnt == 0) {
+		if (cnt == 0)
+		{
 			break;
 		}
 	}
@@ -258,7 +281,8 @@ void ADC::update_system_power(hrt_abstime now)
 	bool  valid_chan[BOARD_NUMBER_BRICKS] = BOARD_BRICK_VALID_LIST;
 	system_power.brick_valid = 0;
 
-	for (int b = 0; b < BOARD_NUMBER_BRICKS; b++) {
+	for (int b = 0; b < BOARD_NUMBER_BRICKS; b++)
+	{
 		system_power.brick_valid |=  valid_chan[b] ? 1 << b : 0;
 	}
 
@@ -293,9 +317,28 @@ void ADC::update_system_power(hrt_abstime now)
 uint32_t ADC::sample(unsigned channel)
 {
 	perf_begin(_sample_perf);
-	uint32_t result = px4_arch_adc_sample(_base_address, channel);
+	uint32_t result = 0;
+	uint8_t i;
 
-	if (result == UINT32_MAX) {
+	// oversample for external voltage input
+	if (channel == ADC1_SPARE_1_CHANNEL || channel == ADC1_SPARE_2_CHANNEL)
+	{
+		for (i = 0; i < 8; i++)
+		{
+			result += px4_arch_adc_sample(_base_address, channel);
+		}
+
+		result >>= 3;
+	}
+
+	else
+	{
+		result = px4_arch_adc_sample(_base_address, channel);
+	}
+
+
+	if (result == UINT32_MAX)
+	{
 		PX4_ERR("sample timeout");
 	}
 
@@ -310,14 +353,18 @@ int ADC::test()
 
 	px4_usleep(20000);	// sleep 20ms and wait for adc report
 
-	if (adc_sub_test.update(&adc)) {
+	if (adc_sub_test.update(&adc))
+	{
 		PX4_INFO_RAW("DeviceID: %" PRId32 "\n", adc.device_id);
 		PX4_INFO_RAW("Resolution: %" PRId32 "\n", adc.resolution);
 		PX4_INFO_RAW("Voltage Reference: %f\n", (double)adc.v_ref);
 
-		for (unsigned l = 0; l < 20; ++l) {
-			for (unsigned i = 0; i < PX4_MAX_ADC_CHANNELS; ++i) {
-				if (adc.channel_id[i] >= 0) {
+		for (unsigned l = 0; l < 20; ++l)
+		{
+			for (unsigned i = 0; i < PX4_MAX_ADC_CHANNELS; ++i)
+			{
+				if (adc.channel_id[i] >= 0)
+				{
 					PX4_INFO_RAW("% 2" PRId16 " :% 6" PRId32, adc.channel_id[i], adc.raw_data[i]);
 				}
 			}
@@ -325,7 +372,8 @@ int ADC::test()
 			PX4_INFO_RAW("\n");
 			px4_usleep(500000);
 
-			if (!adc_sub_test.update(&adc)) {
+			if (!adc_sub_test.update(&adc))
+			{
 				PX4_INFO_RAW("\t ADC test failed.\n");
 			}
 		}
@@ -334,7 +382,10 @@ int ADC::test()
 
 		return 0;
 
-	} else {
+	}
+
+	else
+	{
 		return 1;
 	}
 }
@@ -343,8 +394,10 @@ int ADC::custom_command(int argc, char *argv[])
 {
 	const char *verb = argv[0];
 
-	if (!strcmp(verb, "test")) {
-		if (is_running()) {
+	if (!strcmp(verb, "test"))
+	{
+		if (is_running())
+		{
 			return _object.load()->test();
 		}
 
@@ -359,15 +412,20 @@ int ADC::task_spawn(int argc, char *argv[])
 	bool publish_adc_report = !(argc >= 2 && strcmp(argv[1], "-n") == 0);
 	ADC *instance = new ADC(SYSTEM_ADC_BASE, ADC_CHANNELS, publish_adc_report);
 
-	if (instance) {
+	if (instance)
+	{
 		_object.store(instance);
 		_task_id = task_id_is_work_queue;
 
-		if (instance->init() == PX4_OK) {
+		if (instance->init() == PX4_OK)
+		{
 			return PX4_OK;
 		}
 
-	} else {
+	}
+
+	else
+	{
 		PX4_ERR("alloc failed");
 	}
 
@@ -380,7 +438,8 @@ int ADC::task_spawn(int argc, char *argv[])
 
 int ADC::print_usage(const char *reason)
 {
-	if (reason) {
+	if (reason)
+	{
 		PX4_WARN("%s\n", reason);
 	}
 

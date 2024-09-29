@@ -42,6 +42,7 @@ PhaseSensor::PhaseSensor() :
 	dsin = Derivator<float>(0, 0.3f);
 	dcos = Derivator<float>(0, 0.3f);
 	wlpf = ButterLPF<float>(4, 10, 500);
+	ps.direction = PhaseSensor::UnknowStroke;
 }
 
 PhaseSensor::~PhaseSensor()
@@ -115,6 +116,36 @@ void PhaseSensor::Run()
 			ps.angular_speed = dsin.Value() * ps.hall_cos - dcos.Value() * ps.hall_sin;
 			ps.angular_speed = -wlpf.Process(ps.angular_speed) / timeInterval;
 
+			// update flapping direction
+			if (ps.direction == UnknowStroke)
+			{
+				if (fabsf(ps.flapping_phase) < math::PIf / 2)
+				{
+					ps.direction = DownStroke;
+				}
+
+				else
+				{
+					ps.direction = UpStroke;
+				}
+			}
+
+			else if (ps.direction == DownStroke)
+			{
+				if (fabsf(ps.flapping_phase) > math::PIf / 2)
+				{
+					ps.direction = UpStroke;
+				}
+			}
+
+			else if (ps.direction == UpStroke)
+			{
+				if (fabsf(ps.flapping_phase) < math::PIf / 2)
+				{
+					ps.direction = DownStroke;
+				}
+			}
+
 			// update sensor reading range
 			_sinmax = math::max(_sinmax, ps.sin_raw);
 			_sinmin = math::min(_sinmin, ps.sin_raw);
@@ -173,6 +204,8 @@ int PhaseSensor::print_status()
 	PX4_INFO_RAW("  Flapping : %f (%f deg)\n", (double)ps.flapping_angle, (double)math::degrees(ps.flapping_angle));
 	PX4_INFO_RAW("  Phase    : %f (%f deg)\n", (double)ps.flapping_phase, (double)math::degrees(ps.flapping_phase));
 	PX4_INFO_RAW("  Speed    : %f (%f deg)\n", (double)ps.angular_speed, (double)math::degrees(ps.angular_speed));
+	PX4_INFO_RAW("  Direction: %s\n",ps.direction==UnknowStroke?"Unknow":(ps.direction==UpStroke?"Up stroke":"Down stroke"));
+
 	PX4_INFO_RAW("Update inteval: %f\n", (double)timeInterval);
 	perf_print_counter(_loop_perf);
 	perf_print_counter(_loop_interval_perf);

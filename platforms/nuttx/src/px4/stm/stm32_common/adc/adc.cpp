@@ -133,9 +133,9 @@ int px4_arch_adc_init(uint32_t base_address)
 
 #endif
 
-	/* arbitrarily configure all channels for 55 cycle sample time */
-	rSMPR1(base_address) = 0b00000011011011011011011011011011;
-	rSMPR2(base_address) = 0b00011011011011011011011011011011;
+	/* arbitrarily configure all channels for 28 cycle sample time (not 55 cycle) */
+	rSMPR1(base_address) = 0b00000010010010010010010010010010;
+	rSMPR2(base_address) = 0b00010010010010010010010010010010;
 
 	/* XXX for F2/4, might want to select 12-bit mode? */
 	rCR1(base_address) = 0;
