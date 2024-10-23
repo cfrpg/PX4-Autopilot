@@ -40,7 +40,7 @@
 #endif
 
 ADC::ADC(uint32_t base_address, uint32_t channels, bool publish_adc_report) :
-	ScheduledWorkItem(MODULE_NAME, px4::wq_configurations::hp_default),
+	ScheduledWorkItem(MODULE_NAME, px4::wq_configurations::test1),
 	_publish_adc_report(publish_adc_report),
 	_sample_perf(perf_alloc(PC_ELAPSED, MODULE_NAME": sample")),
 	_base_address(base_address)
