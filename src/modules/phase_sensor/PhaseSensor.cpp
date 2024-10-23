@@ -282,7 +282,6 @@ int PhaseSensor::custom_command(int argc, char *argv[])
 			self->_param_ps_sin_scl.commit();
 			self->_param_ps_sin_off.set(off);
 			self->_param_ps_sin_off.commit();
-
 			scl = 2.0f / (self->_cosmax - self->_cosmin);
 			off = (self->_cosmax + self->_cosmin) / 2.0f;
 			PX4_INFO_RAW("  cos: scale: %f, offset: %f\n", (double)scl, (double)off);
@@ -290,6 +289,11 @@ int PhaseSensor::custom_command(int argc, char *argv[])
 			self->_param_ps_cos_scl.commit();
 			self->_param_ps_cos_off.set(off);
 			self->_param_ps_cos_off.commit();
+
+			self->_cosmax = 0;
+			self->_cosmin = 10;
+			self->_sinmax = 0;
+			self->_sinmin = 10;
 		}
 
 		if (cflag)
